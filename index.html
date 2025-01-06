@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Blog Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
+    <meta name="theme-color" content="#2c3e50">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Penjana Artikel AI</h1>
+            <div class="controls">
+                <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle">
+                    Tukar ke Mod Gelap
+                </button>
+            </div>
+        </div>
+        
+        <div class="input-section">
+            <label for="topic">Topik Artikel:</label>
+            <input type="text" id="topic" placeholder="Masukkan topik artikel anda">
+            
+            <label for="apiKey">Kunci API OpenRouter:</label>
+            <input type="password" id="apiKey" placeholder="Masukkan kunci API anda">
+            
+            <div class="button-group">
+                <button onclick="generateBlog()" class="primary-button">Jana Artikel</button>
+                <button onclick="clearCache()" class="secondary-button">Padam Kunci API Tersimpan</button>
+            </div>
+        </div>
+
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <p>Sedang menjana artikel anda...</p>
+            <div class="progress">
+                <div id="progressBar" 
+                     class="progress-bar" 
+                     role="progressbar" 
+                     aria-valuenow="0" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                </div>
+                <span id="progressText" class="progress-text">0%</span>
+            </div>
+        </div>
+
+        <div class="output-section">
+            <div id="blogContent" class="blog-content"></div>
+            <div id="wordCount" class="word-count"></div>
+            
+            <div class="seo-metadata" id="seoMetadata">
+                <h3>Metadata SEO</h3>
+                <div class="seo-grid">
+                    <div class="seo-item">
+                        <div class="seo-label">Focus Keywords</div>
+                        <div class="seo-content" id="focusKeywords">
+                            <div class="seo-value"></div>
+                            <button class="copy-btn" onclick="copySeoItem('focusKeywords')">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="seo-item">
+                        <div class="seo-label">SEO Title</div>
+                        <div class="seo-content" id="seoTitle">
+                            <div class="seo-value"></div>
+                            <button class="copy-btn" onclick="copySeoItem('seoTitle')">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="seo-item">
+                        <div class="seo-label">URL Slug</div>
+                        <div class="seo-content" id="slug">
+                            <div class="seo-value"></div>
+                            <button class="copy-btn" onclick="copySeoItem('slug')">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="seo-item">
+                        <div class="seo-label">Meta Description</div>
+                        <div class="seo-content" id="metaDescription">
+                            <div class="seo-value"></div>
+                            <button class="copy-btn" onclick="copySeoItem('metaDescription')">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="copyContent()" id="copyButton" style="display: none;">
+                Salin Kandungan
+            </button>
+        </div>
+    </div>
+    <footer class="footer">
+        <p>Dibuat dengan <span class="heart">❤️</span> oleh xhanafix © 2024</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html> 
