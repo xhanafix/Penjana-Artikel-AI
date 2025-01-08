@@ -35,10 +35,10 @@ function toggleTheme() {
         
         // Update theme toggle button text
         const themeToggle = document.getElementById('themeToggle');
-        themeToggle.textContent = `Tukar ke Mod ${currentTheme === 'dark' ? 'Gelap' : 'Cerah'}`;
+        themeToggle.textContent = `Switch to ${currentTheme === 'dark' ? 'Dark' : 'Light'} Mode`;
     } catch (error) {
         console.error('Theme toggle error:', error);
-        alert('Gagal menukar tema');
+        alert('Failed to toggle theme');
     }
 }
 
@@ -46,10 +46,10 @@ function clearCache() {
     try {
         localStorage.removeItem('openRouterApiKey');
         document.getElementById('apiKey').value = '';
-        alert('Kunci API berjaya dibersihkan!');
+        alert('Kunci API berjaya dipadamkan!');
     } catch (error) {
         console.error('Clear cache error:', error);
-        alert('Gagal membersihkan kunci API yang disimpan');
+        alert('Gagal memadam kunci API tersimpan');
     }
 }
 
@@ -69,7 +69,7 @@ function createSegmentPrompt(topic, section, wordCount) {
             Fokus pada memberikan maklumat yang bernilai dan boleh dilaksanakan dengan tajuk H2 dan H3 yang sesuai.
             Sertakan statistik, contoh, dan pandangan pakar. Format dalam markdown.`,
             
-        conclusion: `Tuliskan kesimpulan yang mantap (tepat ${wordCount} patah perkataan) untuk artikel mengenai "${topic}".
+        conclusion: `Tuliskan kesimpulan yang kukuh (tepat ${wordCount} patah perkataan) untuk artikel mengenai "${topic}".
             Ringkaskan perkara-perkara utama dan sertakan seruan untuk bertindak. Format dalam markdown.`,
             
         faq: `Tuliskan bahagian FAQ (tepat ${wordCount} patah perkataan) dengan 5 soalan lazim dan jawapan terperinci mengenai "${topic}".
@@ -121,12 +121,12 @@ async function generateBlog() {
         }
 
         // Generate SEO metadata
-        const metadataPrompt = `Untuk artikel mengenai "${topic}", hasilkan:
-            - Kata Kunci Fokus: (kata kunci utama + 2-3 kata kunci sekunder)
-            - Tajuk SEO: (50-60 aksara, sertakan perkataan kuasa + nombor)
-            - Slug URL: (3-4 perkataan dengan kata kunci utama)
-            - Penerangan Meta: (150-155 aksara, sertakan CTA)
-            - Cadangan Teks Alt Imej: (2-3 contoh)`;
+        const metadataPrompt = `For the article about "${topic}", generate:
+            - Focus Keywords: (primary keyword + 2-3 secondary keywords)
+            - SEO Title: (50-60 characters, include power word + number)
+            - Slug: (3-4 words with main keyword)
+            - Meta Description: (150-155 characters, include CTA)
+            - Image Alt Text Suggestions: (2-3 examples)`;
 
         const metadata = await generateSegment(metadataPrompt, apiKey);
         fullContent += '\nSEO Metadata:\n' + metadata + '\n{finish}';
@@ -154,7 +154,7 @@ async function generateSegment(prompt, apiKey) {
             model: 'google/learnlm-1.5-pro-experimental:free',
             messages: [{
                 role: 'user',
-                content: prompt
+                content: `Sila jawab dalam Bahasa Malaysia yang formal dan betul: ${prompt}`
             }],
             temperature: 0.7,
             max_tokens: 2000
@@ -234,7 +234,7 @@ function displayContent(content) {
     const wordCount = getWordCount(articleContent);
     
     // Display word count with appropriate styling
-    wordCountElement.textContent = `Jumlah Perkataan: ${wordCount} patah perkataan`;
+    wordCountElement.textContent = `Jumlah Perkataan: ${wordCount} perkataan`;
     wordCountElement.className = 'word-count';
     
     if (Math.abs(wordCount - 2000) > 100) {
@@ -276,6 +276,6 @@ function copyContent() {
     const fullContent = `${blogContent}\n\n${seoMetadata}`;
     
     navigator.clipboard.writeText(fullContent)
-        .then(() => alert('Kandungan berjaya disalin ke clipboard!'))
+        .then(() => alert('Kandungan telah disalin ke papan keratan!'))
         .catch(err => alert('Gagal menyalin kandungan: ' + err));
 } 
