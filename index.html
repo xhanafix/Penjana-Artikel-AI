@@ -4,37 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penjana Artikel AI</title>
+    <meta name="description" content="Penjana artikel AI yang menggunakan OpenRouter API untuk menjana artikel berkualiti tinggi dalam Bahasa Malaysia">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✍️</text></svg>">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Penjana Artikel AI</h1>
+            <h1><i class="fas fa-robot"></i> Penjana Artikel AI</h1>
             <div class="controls">
-                <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle">
-                    Tukar ke Mod Gelap
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i> <span>Tukar ke Mod Gelap</span>
                 </button>
             </div>
         </div>
         
         <div class="input-section">
-            <label for="topic">Topik Artikel:</label>
-            <input type="text" id="topic" placeholder="Masukkan topik artikel anda">
+            <div class="form-group">
+                <label for="topic">Topik Artikel:</label>
+                <input type="text" id="topic" placeholder="Masukkan topik artikel anda" aria-required="true">
+                <div id="topicError" class="error-message"></div>
+            </div>
             
-            <label for="apiKey">Kunci API OpenRouter:</label>
-            <input type="password" id="apiKey" placeholder="Masukkan kunci API anda">
+            <div class="form-group">
+                <label for="apiKey">Kunci API OpenRouter:</label>
+                <div class="password-input-container">
+                    <input type="password" id="apiKey" placeholder="Masukkan kunci API anda" aria-required="true">
+                    <button type="button" id="togglePassword" class="toggle-password" aria-label="Tunjuk/Sembunyi kata laluan">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div id="apiKeyError" class="error-message"></div>
+                <small class="help-text">Dapatkan kunci API anda di <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">OpenRouter.ai</a></small>
+            </div>
+            
+            <div class="advanced-options">
+                <details>
+                    <summary>Tetapan Lanjutan</summary>
+                    <div class="form-group">
+                        <label for="modelSelect">Model AI:</label>
+                        <select id="modelSelect">
+                            <option value="google/learnlm-1.5-pro-experimental:free">Google LearnLM 1.5 Pro (Percuma)</option>
+                            <option value="anthropic/claude-3-haiku:free">Claude 3 Haiku (Percuma)</option>
+                            <option value="meta-llama/llama-3-70b-instruct:free">Llama 3 70B (Percuma)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="temperatureSlider">Kreativiti (Temperature):</label>
+                        <div class="slider-container">
+                            <input type="range" id="temperatureSlider" min="0" max="1" step="0.1" value="0.7">
+                            <span id="temperatureValue">0.7</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="wordCountTarget">Sasaran Jumlah Perkataan:</label>
+                        <input type="number" id="wordCountTarget" min="500" max="5000" step="100" value="2000">
+                    </div>
+                </details>
+            </div>
             
             <div class="button-group">
-                <button onclick="generateBlog()" class="primary-button">Jana Artikel</button>
-                <button onclick="clearCache()" class="secondary-button">Padam Kunci API Tersimpan</button>
+                <button id="generateButton" class="primary-button">
+                    <i class="fas fa-magic"></i> Jana Artikel
+                </button>
+                <button id="clearCacheButton" class="secondary-button">
+                    <i class="fas fa-trash"></i> Padam Kunci API Tersimpan
+                </button>
             </div>
         </div>
 
         <div class="loading-spinner" id="loadingSpinner">
             <div class="spinner"></div>
-            <p>Sedang menjana artikel anda...</p>
+            <p id="generationStatus">Sedang menjana artikel anda...</p>
             <div class="progress">
                 <div id="progressBar" 
                      class="progress-bar" 
@@ -48,25 +92,64 @@
         </div>
 
         <div class="output-section">
+            <div class="output-header">
+                <h2 id="articleTitle">Artikel Anda</h2>
+                <div class="output-controls">
+                    <button id="printButton" class="icon-button" title="Cetak Artikel">
+                        <i class="fas fa-print"></i>
+                    </button>
+                    <button id="downloadButton" class="icon-button" title="Muat Turun sebagai Markdown">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button id="copyButton" class="icon-button" title="Salin Kandungan">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            
             <div id="blogContent" class="blog-content"></div>
             <div id="wordCount" class="word-count"></div>
             
             <div class="seo-metadata" id="seoMetadata">
-                <h3>Metadata SEO</h3>
-                <div id="focusKeywords"></div>
-                <div id="seoTitle"></div>
-                <div id="slug"></div>
-                <div id="metaDescription"></div>
+                <h3><i class="fas fa-search"></i> Metadata SEO</h3>
+                <div id="seoMetadataContent"></div>
             </div>
-
-            <button onclick="copyContent()" id="copyButton" style="display: none;">
-                Salin Kandungan
-            </button>
+        </div>
+        
+        <div id="saveModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>Simpan Artikel</h2>
+                <div class="form-group">
+                    <label for="articleName">Nama Artikel:</label>
+                    <input type="text" id="articleName" placeholder="Masukkan nama untuk artikel ini">
+                </div>
+                <button id="saveArticleButton" class="primary-button">Simpan</button>
+            </div>
+        </div>
+        
+        <div id="savedArticles" class="saved-articles">
+            <h3><i class="fas fa-history"></i> Artikel Tersimpan</h3>
+            <div id="articlesList" class="articles-list">
+                <!-- Saved articles will be listed here -->
+                <p class="empty-state">Tiada artikel tersimpan.</p>
+            </div>
         </div>
     </div>
+    
     <footer class="footer">
-        <p>Dibuat dengan <span class="heart">❤️</span> oleh xhanafix © 2024</p>
+        <div class="footer-content">
+            <p>Dibuat dengan <span class="heart">❤️</span> oleh xhanafix © 2024</p>
+            <div class="footer-links">
+                <a href="#" id="aboutLink">Tentang</a>
+                <a href="#" id="privacyLink">Dasar Privasi</a>
+                <a href="https://github.com/xhanafix" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
     </footer>
+    
     <script src="script.js"></script>
 </body>
 </html> 
